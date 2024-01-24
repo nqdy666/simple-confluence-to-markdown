@@ -184,7 +184,7 @@
     };
 
     Formatter.prototype.removeArbitraryElements = function($content) {
-      return this._removeElementLeaveText($content, 'span, .user-mention');
+      return this._removeElementLeaveText($content, 'span, .user-mention, a[rel="nofollow"]');
     };
 
 
@@ -211,6 +211,71 @@
       return $content.find('.attachment-buttons').remove().end().find('.plugin_attachments_upload_container').remove().end().find('table.attachments.aui').remove().end();
     };
 
+    /**
+     * Removes arbitrary confluence elements for attachments 2.
+     * @param {cheerio obj} $content Content of a file
+     * @return {cheerio obj} Cheerio object
+     */
+    Formatter.prototype.fixAttachmentWrapper2 = function($content) {
+      return $content.find('.pageSectionHeader').remove().end().find('.greybox').remove().end()
+    };
+
+    /**
+     * 修复图片引用，去掉不必要的其他属性
+     * @param {cheerio obj} $content Content of a file
+     * @return {cheerio obj} Cheerio object
+     */
+    Formatter.prototype.fixImageAndA = function($content) {
+      var $;
+      $ = this._cheerio;
+      return $content.find('img,a').each((function(_this) {
+        return function(i, el) {
+          $(el).removeAttr('draggable');
+          $(el).removeAttr('width');
+          $(el).removeAttr('height');
+          $(el).removeAttr('data-image-src');
+          $(el).removeAttr('data-linked-resource-id');
+          $(el).removeAttr('data-unresolved-comment-count');
+          $(el).removeAttr('data-linked-resource-version');
+          $(el).removeAttr('data-linked-resource-type');
+          $(el).removeAttr('data-linked-resource-default-alias');
+          $(el).removeAttr('data-base-url');
+          $(el).removeAttr('data-linked-resource-content-type');
+          $(el).removeAttr('data-linked-resource-container-id');
+          $(el).removeAttr('data-linked-resource-container-version');
+        };
+      })(this)).end();
+    };
+
+    /**
+     * 修订Image
+     * @param {cheerio obj} $content Content of a file
+     * @return {cheerio obj} Cheerio object
+     */
+
+    Formatter.prototype.fixAWithinSpanImg = function($content) {
+      var $;
+      $ = this._cheerio;
+
+      var resourcesList = []
+      $content.find('.greybox').find('a').each(function (i, el) {
+        resourcesList.push({ text: $(el).text(), link: $(el).attr('href'), type: $(el).text() })
+      })
+
+      return $content.find('span[class="confluence-embedded-file-wrapper"]:has(a)').each((function(_this) {
+        return function(i, el) {
+          if ($(el).find('img').length !== 0) {
+            var mAEl = $(el).find('a')
+            const resourceId = mAEl.attr('data-linked-resource-id')
+            const rInfo = resourcesList.find(r => r.link.indexOf(resourceId) !== -1)
+            if (rInfo) {
+              var aEl = $('<a></a>').attr('href', rInfo.link).text(rInfo.text)
+              $(el).replaceWith(aEl);
+            }
+          }
+        };
+      })(this)).end();
+    };
 
     /**
      * Removes arbitrary confluence elements for page log.

@@ -59,9 +59,12 @@
       content = this.formatter.fixEmptyHeading(content);
       content = this.formatter.fixPreformattedText(content);
       content = this.formatter.fixImageWithinSpan(content);
-      content = this.formatter.removeArbitraryElements(content);
-      content = this.formatter.fixArbitraryClasses(content);
+      content = this.formatter.fixAWithinSpanImg(content);
       content = this.formatter.fixAttachmentWraper(content);
+      content = this.formatter.fixAttachmentWrapper2(content);
+      content = this.formatter.fixImageAndA(content);
+      content = this.formatter.fixArbitraryClasses(content);
+      content = this.formatter.removeArbitraryElements(content);
       content = this.formatter.fixPageLog(content);
       content = this.formatter.fixLocalLinks(content, this.space, pages);
       content = this.formatter.addPageHeading(content, this.heading);

@@ -116,13 +116,14 @@
         flag: 'w'
       });
       command = 'pandoc -f html ' + this.pandocOptions + ' -o "' + fullOutFileName + '"' + ' "' + tempInputFile + '"';
+      this.logger.error('Running command: ' + command);
       out = this._exec(command, {
         cwd: fullOutDirName
       });
       if (out.status > 0) {
         this.logger.error(out.stderr);
       }
-      // return this._fs.unlinkSync(tempInputFile);
+      return this._fs.unlinkSync(tempInputFile); // 删除缓存文件
     };
 
 
