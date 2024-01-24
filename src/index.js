@@ -1,6 +1,8 @@
 const program = require("commander");
 const path = require('path')
 const fs = require('fs')
+const syncExec = require('sync-exec');
+
 const { loadConfig } = require("./configuration");
 
 const Bootstrap = require('./Bootstrap');
@@ -58,6 +60,17 @@ if (!config.pathResource && !config.pathResult) {
   config.pathResult = process.argv[3];
 }
 
-var bootstrap = new Bootstrap();
+function run () {
+  // 检测pandoc是否安装成功
+  const out = syncExec('pandoc --version');
+  if (out.status > 0) {
+    console.log('您还没有安装pandoc. 您可以在终端上执行`pandoc --version`确认是否安装成功')
+    return
+  }
 
-bootstrap.run(config.pathResource, config.pathResult);
+  // 启动
+  var bootstrap = new Bootstrap();
+  bootstrap.run(config.pathResource, config.pathResult);
+}
+
+run()

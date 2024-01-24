@@ -1,91 +1,81 @@
-# Confluence to Markdown converter which is actually working
+# Confluence 转 Markdown
 
-Convert [Confluence HTML export](#conflhowto) to Markdown
+转换 [Confluence 的 HTML 导出文件](#conflhowto) to Markdown文件
 
 
-## Requirements
+## 需要
 
-You must have [pandoc] command line tool installed. Check it by running:
+你必须先安装 [pandoc] 命令行工具. 确保他运行:
 
 ```
 pandoc --version
 ```
 
-Install all project dependencies:
+安装npm依赖:
 
 ```
-npm install
+npm install simple-confluence-to-markdown -g
 ```
 
+## 使用
 
-## Usage
-
-In the converter's directory:
+在转换器的目录中：
 
 ```
-npm run start <pathResource> <pathResult>
+simple-confluence-to-markdown -i <pathResource> -o <pathResult>
 ```
 
+### 参数
 
-### Parameters
-
-parameter | description
+参数 | 描述
 --- | ---
-`<pathResource>` | File or directory to convert with extracted Confluence export
-`<pathResult>` | Directory to where the output will be generated to. Defaults to current working directory
+`<pathResource>` | 要转换的文件或目录，其中包含提取的 Confluence 导出内容
+`<pathResult>` | 输出结果将生成到的目录。默认为当前工作目录
 
+## 程序描述 <a name="process-description"></a>
 
-## Process description<a name="process-description"></a>
+- Confluence页面ID在HTML文件名和链接中被替换为该页面的标题
+- 创建总体索引index.md，链接到所有Confluence空间-它们的索引
+- 图像和其他插入的附件链接到生成的markdown文件
+  - 整个`images`和`attachments`目录都被复制到结果目录中
+  - 没有检查特定文件/图像是否被使用
+- 生成的markdown链接到内部页面时，不包含尾部的**.md**扩展名，以符合[gitit]的要求
+  - 可以通过在`.js`文件中找到所有出现`gitit requires link to pages without .md extension`的地方，并在那里添加扩展名来更改此行为。
+- pandoc实用程序可以接受许多选项来改变其默认行为
+  - 可以通过将它们添加到[`App.js`](src/App.js)文件中的`outputTypesAdd`，`outputTypesRemove`，`extraOptions`属性来传递给它们
+  - 这里是pandoc可以接受的[选项列表][pandoc-options]
+- 整个应用程序使用一个控制台日志记录器，默认的详细程度设置为INFO
+  - 可以在[`Logger.js`](src/App.js)文件中将详细程度更改为DEBUG、INFO、WARNING、ERROR级别
+- 对Confluence页面的HTML文本应用一系列格式化规则，以便正确转换
+  - 可以在[`Page.js`](src/Page.js)文件中查看和/或更改这些规则
+  - 这些规则本身位于[`Formatter.js`](src/Formatter.js)文件中
 
-- Confluence page IDs in HTML file names and links are replaced with that pages' heading
-- overall index.md is created linking all Confluence spaces - their indexes
-- images and other inserted attachments are linked to generated markdown
-  - whole `images` and `attachments` directories are copied to resulting directory
-    - there is no checking done whether perticular file/image is used or not
-- markdown links to internal pages are generated without the trailing **.md** extension to comply to [gitit] expectations
-  - this can be changed by finding all occurances of `gitit requires link to pages without .md extension` in the `.coffee` files and adding the extension there.
-  - or you can send a PR ;)
-- the pandoc utility can accept quite a few options to alter its default behavior
-  - those can be passed to it by adding them to `@outputTypesAdd`, `@outputTypesRemove`, `@extraOptions` properties in the [`App.coffee`](src/App.coffee) file
-  - or you can send a PR ;)
-  - here is the [list of options][pandoc-options] pandoc can accept
-- throughout the application a single console logger is used, its default verbosity is set to INFO
-  - you can change the verbosity to one of DEBUG, INFO, WARNING, ERROR levels in the [`Logger.coffee`](src/App.coffee) file
-  - or you can send a PR ;)
-- a series of formatter rules is applied to the HTML text of Confluence page for it to be converted properly
-  - you can view and/or change them in the [`Page.coffee`](src/Page.coffee) file
-  - the rules themselves are located in the [`Formatter.coffee`](src/Formatter.coffee) file
+### 改进空间
 
+如果您发现有任何不满意的地方，欢迎您提交 PR（Pull Request）。上面的 [程序描述](#process-description) 部分提到了一些很好的起点。
 
-### Room for improvement
+### 导出为 HTML
 
-If you happen to find something not to your liking, you are welcome to send a PR. Some good starting points are mentioned in the [Process description](#process-description) section above.
+请注意，如果转换器不知道如何处理某种样式，HTML 转 Markdown 通常会保留 HTML 不变（Markdown 允许使用 HTML 标签）。
 
+## Confluence 数据导出的逐步指南 <a name="conflhowto"></a>
 
-### Export to HTML
+1. 进入空间，选择左下方底部的侧边栏上的 `空间管理 > 内容管理`。
+2. 选择导出。只有具有**导出空间**权限的用户才能看到该选项。
+3. 选择 HTML，然后选择下一步。
+4. 决定是否需要自定义导出：
+   - 选择普通导出以生成一个包含您有权限查看的所有页面的 HTML 文件。
+   - 选择自定义导出，如果您想导出页面的子集，或者排除评论。
+5. 解压缩 ZIP 文件。
 
-Note that if the converter does not know how to handle a style, HTML to Markdown typically just leaves the HTML untouched (Markdown does allow for HTML tags).
+**警告**  
+请注意，博客不会被导出为 HTML。您需要手动复制它或将其导出为 XML 或 PDF。但是这些格式不能被此工具处理。
 
+# 鸣谢
 
-## Step by step guide for Confluence data export<a name="conflhowto"></a>
-
-1. Go to the space and choose `Space tools > Content Tools on the sidebar`.
-2. Choose Export. This option will only be visible if you have the **Export Space** permission.
-3. Select HTML then choose Next.
-4. Decide whether you need to customize the export:
-  - Select Normal Export to produce an HTML file containing all the pages that you have permission to view.
-  - Select Custom Export if you want to export a subset of pages, or to exclude comments from the export.
-5. Extract zip
-
-**WARNING**  
-Please note that Blog will **NOT** be exported to HTML. You have to copy it manually or export it to XML or PDF. But those format cannot be processed by this utility.
-
-
-# Attribution
-
-Thanks to Eric White for a starting point.
-
+感谢 meridius。
 
 [pandoc]: http://pandoc.org/installing.html
 [pandoc-options]: http://hackage.haskell.org/package/pandoc
 [gitit]: https://github.com/jgm/gitit/
+[confluence-to-markdown]: https://github.com/meridius/confluence-to-markdown
