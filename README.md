@@ -3,7 +3,7 @@
 转换 [Confluence 的 HTML 导出文件](#conflhowto) to Markdown文件
 
 
-## 需要
+## 安装
 
 你必须先安装 [pandoc] 命令行工具. 确保他运行:
 
