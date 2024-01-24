@@ -71,6 +71,17 @@ simple-confluence-to-markdown -i <pathResource> -o <pathResult>
 **警告**  
 请注意，博客不会被导出为 HTML。您需要手动复制它或将其导出为 XML 或 PDF。但是这些格式不能被此工具处理。
 
+### 开发
+
+- node >= 10
+
+```
+npm i // 安装依赖
+npm test // 测试
+npm run release // 发布
+git push --follow-tags origin master && npm publish // npm 发布
+```
+
 # 鸣谢
 
 感谢 meridius。
