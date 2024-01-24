@@ -22,6 +22,7 @@
   "repository": "https://github.com/nqdy666/simple-confluence-to-markdown.git",
   "dependencies": {
     "cheerio": "^0.22.0",
+    "commander": "^3.0.2",
     "fs": "0.0.1-security",
     "mkdirp": "^0.5.1",
     "ncp": "^2.0.0",

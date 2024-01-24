@@ -8,7 +8,7 @@
     this.timeout(50 * 1000)
 
     it('testing run cmd', function() {
-      shelljs.exec(`node ../src/index.js`, function (code, stdout, stderr) {
+      shelljs.exec(`node ../src/index.js -i ./assets/page1 -o ./output`, function (code, stdout, stderr) {
         if (code !== 0) {
           throw new Error(stderr)
         }
