@@ -1,5 +1,7 @@
 # Confluence 转 Markdown
 
+[![npm](https://img.shields.io/npm/v/simple-confluence-to-markdown)](https://www.npmjs.com/package/simple-confluence-to-markdown) [![NPM downloads](http://img.shields.io/npm/dm/simple-confluence-to-markdown.svg?style=flat-square)](http://www.npmtrends.com/simple-confluence-to-markdown)
+
 转换 [Confluence 的 HTML 导出文件](#conflhowto) to Markdown文件
 
 
